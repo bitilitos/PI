@@ -19,8 +19,7 @@ public class RandomDistribution {
 
     private void createDistribution() {
         int probSum = 0;
-        double average = ProbMax
-                / range;
+        double average = ProbMax / range;
 
         // SE A PROBABILIDADE AINDA NÃO FOR 1
 

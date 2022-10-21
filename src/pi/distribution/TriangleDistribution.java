@@ -27,10 +27,7 @@ public class TriangleDistribution {
 
     public static void main(String[] args) {
         TriangleDistribution td = new TriangleDistribution();
-        System.out.println(td.FDP(0.75));
-
-       BufferedImage histogramImg = Histogram.createHistogram("Histograma Triangular", td.createHistogramData(), 900, 400, 100        );
+        BufferedImage histogramImg = Histogram.createHistogram("Histograma Triangular", td.createHistogramData(), 900, 400, 100        );
         HistogramWindow.createHistogramJFrame("Histograma Triangular", histogramImg).setVisible(true);
     }
-
 }
