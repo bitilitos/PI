@@ -174,7 +174,7 @@ public final class GaussianDistribution {
 
     public static void main(String[] args) {
         GaussianDistribution gd = new GaussianDistribution(50, 20);
-        BufferedImage histogramImg = Histogram.createHistogram(gd.createHistogramData(), 900, 400, 20
+        BufferedImage histogramImg = Histogram.createHistogram("Histograma Gaussiano", gd.createHistogramData(), 900, 400, 20
         );
         HistogramWindow.createHistogramJFrame("Histograma Gaussiano", histogramImg).setVisible(true);
     }

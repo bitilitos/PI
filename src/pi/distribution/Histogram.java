@@ -11,12 +11,12 @@ import java.awt.image.BufferedImage;
 
 public final class Histogram {
 
-    public static BufferedImage createHistogram(double[] dataHistogram, int width, int height,int nrBarras) {
+    public static BufferedImage createHistogram(String title, double[] dataHistogram, int width, int height,int nrBarras) {
         HistogramDataset hd = new HistogramDataset();
         hd.setType(HistogramType.RELATIVE_FREQUENCY);
         hd.addSeries("n", dataHistogram, nrBarras);
         PlotOrientation orientation = PlotOrientation.VERTICAL;
-        JFreeChart histograma = ChartFactory.createHistogram("Histograma Gaussiano",
+        JFreeChart histograma = ChartFactory.createHistogram(title,
                 "Dados", "Frequência", hd);
 
         return histograma.createBufferedImage(width,height);
