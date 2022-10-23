@@ -10,7 +10,7 @@ public class HistogramWindow {
     public static JFrame createHistogramJFrame(String title, BufferedImage histogramImg) {
         JFrame frame = new JFrame(title);
         frame.setSize(histogramImg.getWidth(),histogramImg.getHeight());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Container container = new Container();
         container.setLayout(new FlowLayout());

@@ -26,7 +26,11 @@ public final class DiscreteDistribution {
     }
 
     public static double getUniformDiscrete(){
-        return Math.floor(Math.random()*10);
+        return Math.floor((Math.random()*10)+1);
+    }
+
+    public static double getUniformDiscrete0to5(){
+        return Math.floor((Math.random()*5));
     }
 
     public static double[] createUniformDiscreteHistogramData(){
