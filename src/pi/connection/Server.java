@@ -1,12 +1,16 @@
 package pi.connection;
 
+import pi.crypto.RSA;
 import pi.gui.Window;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Server {
     private ServerSocket serverSocket;
@@ -14,6 +18,9 @@ public class Server {
     private Window window;
     private boolean connected = false;
     private long connectionTime;
+    private BigInteger clientEKey;
+    private BigInteger clientNKey;
+
 
     public Server(Window window) {
         this.window = window;
@@ -53,13 +60,39 @@ public class Server {
             String message = (String) ois.readObject();
 
             System.out.println("Server received Message: " + message);
-            window.updateMessageReceivedJTextField(message);
+            if (message.charAt(0) == '|')
+                getClientKey(message);
+            else {
+                BigInteger d = new BigInteger(window.getD());
+                BigInteger N = new BigInteger(window.getN());
+                System.out.println("D: " + d +"\n" + "N: "+ N +"\nMessage: " + message);
+                byte[] decryptedMessage = RSA.decryptMessage(message.getBytes(StandardCharsets.UTF_8), d, N);
+                System.out.println(decryptedMessage);
+                System.out.println(new String(decryptedMessage));
+                window.updateMessageReceivedJTextField(new String(decryptedMessage));
+
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void getClientKey(String message) {
+
+        String keysString[] = message.substring(1).split(":");
+        clientEKey = new BigInteger(keysString[0]);
+        clientNKey = new BigInteger(keysString[1]);
+        window.setPublicClient_E_KeyJTextField(clientEKey.toString());
+        window.setPublicClient_N_KeyJTextField(clientNKey.toString());
+        sendPublicKeys();
+    }
+
+    private void sendPublicKeys() {
+        sendMessage("|" + window.getE() + ":" + window.getN(), "Server");
     }
 
     public void sendMessage(String msg, String name) {

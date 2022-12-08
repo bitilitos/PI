@@ -1,14 +1,20 @@
 package pi.userNode;
 
 import pi.connection.Server;
+import pi.gui.KeyGeneratorWindow;
+import pi.gui.Window;
+
+import java.awt.*;
 
 
-public class ServerNode extends Node{
+public class ServerNode extends Node implements Runnable{
     Server server;
     
      public ServerNode (String name) {
          super(name);
-         server = new Server(super.getWindow());
+
+         KeyGeneratorWindow keyGeneratorWindow = new KeyGeneratorWindow(this);
+         //server = new Server(super.getWindow());
          print();
 
     }
@@ -20,5 +26,15 @@ public class ServerNode extends Node{
     }
 
 
-    
+    @Override
+    public void run() {
+        Window window = new Window("Eu", this );
+         window.setVisible(true);
+         super.setWindow(window);
+        server = new Server(window);
+
+                while (true) {
+                   getServer().receiveMessage();
+                }
+    }
 }

@@ -5,7 +5,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
-import pi.gui.HistogramWindow;
 
 import java.awt.image.BufferedImage;
 
@@ -17,7 +16,7 @@ public final class Histogram {
         hd.addSeries("n", dataHistogram, nrBarras);
         PlotOrientation orientation = PlotOrientation.VERTICAL;
         JFreeChart histograma = ChartFactory.createHistogram(title,
-                "Dados", "Frequência", hd);
+                "Dados", "Frequência Relativa", hd);
 
         return histograma.createBufferedImage(width,height);
     }

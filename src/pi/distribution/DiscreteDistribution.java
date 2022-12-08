@@ -16,6 +16,7 @@ public final class DiscreteDistribution {
         return 13;
     }
 
+
     public static double[] createTriangleDiscreteHistogramData(){
         double[] dataHistogram = new double[1000000];
         for (int i = 0; i < 1000000; i++) {
@@ -24,6 +25,9 @@ public final class DiscreteDistribution {
 
         return dataHistogram;
     }
+
+
+
 
     public static double getUniformDiscrete(){
         return Math.floor((Math.random()*10)+1);

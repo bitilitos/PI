@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class Slider extends JFrame implements ActionListener, ChangeListener{
-    private final int RANGE = 100;
+    private final int RANGE = 3;
     private int VA1;
     private int VA2;
     private int VA3;
@@ -42,7 +42,7 @@ public class Slider extends JFrame implements ActionListener, ChangeListener{
         container.setLayout(new BorderLayout());
 
         // slider
-        jSlider = new JSlider();;
+        jSlider = new JSlider(1,3);
 
         // label
         jLabel = new JLabel();
@@ -63,7 +63,7 @@ public class Slider extends JFrame implements ActionListener, ChangeListener{
 
         // text fiel VA4
         value = new JTextField(10);
-        value.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        value.setFont(new Font("SansSerif", Font.PLAIN, 16));
 
         // text fiel VA5
         gaussian = new JTextField(10);
@@ -71,8 +71,9 @@ public class Slider extends JFrame implements ActionListener, ChangeListener{
 
 
         // set spacing
-        jSlider.setMajorTickSpacing(50);
-        jSlider.setMinorTickSpacing(5);
+
+        jSlider.setMajorTickSpacing(33);
+        jSlider.setMinorTickSpacing(33);
 
         // set Change Listener
         jSlider.addChangeListener(this);
@@ -90,9 +91,10 @@ public class Slider extends JFrame implements ActionListener, ChangeListener{
         container.add("West", jSlider);
 
         // add slider to panel
-        Label label1 = new Label("Value");
+        Label label1 = new Label("Encripação");
         label1.setFont(new Font("SansSerif", Font.BOLD, 20));
         center.add(label1);
+        value.setText("Média (512B)");
         center.add(value);
         //value.setText(String.valueOf(this.getVA2()));
        // Label label2 = new Label("Gaussian");
@@ -119,12 +121,37 @@ public class Slider extends JFrame implements ActionListener, ChangeListener{
     @Override
     public void stateChanged(ChangeEvent e) {
        // normalDistribution(getVA1()+RANGE/2, getVA2()-(getVA1()+RANGE/2));
+        String encryption = "";
+        switch (jSlider.getValue()) {
+            case 1:
+                encryption = "Mínima (256B)";
+                break;
+            case 2:
+                encryption = "Média (512B)";
+                break;
+            case 3:
+                encryption = "Máxima (1024B)";
+                break;
+        }
 
-        value.setText("" + jSlider.getValue());
+        value.setText("" + encryption);
         kgw.setCalculateKeysButtonEnable();
 
 
         //gaussian.setText("" + VA4);
+    }
+
+    public int getEncryptionValue() {
+        switch (jSlider.getValue()) {
+            case 1:
+                return 256;
+
+            case 2:
+                return 512;
+
+        }
+        return 1024;
+
     }
 
     @Override

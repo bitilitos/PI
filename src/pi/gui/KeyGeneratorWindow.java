@@ -1,24 +1,30 @@
 package pi.gui;
 
-import pi.distribution.DiscreteDistribution;
-import pi.distribution.GaussianDistribution;
-import pi.distribution.Histogram;
-import pi.distribution.TriangleDistribution;
+import pi.crypto.RSA;
+import pi.distribution.*;
+import pi.userNode.ClientNode;
+import pi.userNode.Node;
+import pi.userNode.ServerNode;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class KeyGeneratorWindow {
     private JFrame frame;
     private GaussianDistribution gaussianDistribution;
     private TriangleDistribution triangleDistribution;
+    private UniformDistribution uniformDistribution = new UniformDistribution();
     private Insets insets = new Insets(10,10,10,10);
     private Button calculateKeysButton = new Button("Calcular Chaves");
     private Button gaussianHistogramButton;
     private Button triangularHistogramButton;
+    private Button uniformHistogramButton;
+    private Button okButton;
     private JTextField stdGaussianJText;
     private JTextField resultTriangularJText;
     private JTextField resultGaussianJText;
@@ -28,11 +34,21 @@ public class KeyGeneratorWindow {
     private JTextField rangeStartJText = new JTextField();
     private int uniformDiscrete = -1;
     private int triangleDiscrete = -1;
-    private int sliderValue = -1;
-    private int resultGaussian = -1;
-    private int resultTriangular = -1;
+    private double resultUniform = -1;
+    private BigInteger resultGaussian = new BigInteger("-1");
+    private BigInteger resultTriangular = new BigInteger("-1");
+    private BigInteger publicKey;
+    private BigInteger privateKey;
     private int multiplyFactor = -1;
     private Slider slider = new Slider(this);
+    private Node node;
+
+    public KeyGeneratorWindow (Node node) {
+        this.node = node;
+        createWindow();
+        frame.setVisible(true);
+
+    }
 
 
 
@@ -63,14 +79,22 @@ public class KeyGeneratorWindow {
 
         gbc.gridy = 2;
         gbc.gridx = 0;
-        gbc.gridwidth = 2;
+
+        frame.add(createUniformDistributionContainer(), gbc);
+
+        gbc.gridy = 2;
+        gbc.gridx = 1;
         frame.add(slider.SliderON(),gbc);
 
-        gbc.gridx = 3;
+        gbc.gridx = 2;
+        gbc.gridy = 2;
         calculateKeysButton.setEnabled(false);
         createCalculateKeysButton();
         frame.add(calculateKeysButton,gbc);
 
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        frame.add(createOKButton(), gbc);
 
 
         frame.pack();
@@ -86,7 +110,7 @@ public class KeyGeneratorWindow {
         gbc.insets = new Insets(10, 10,10,80);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 1;
 
         JLabel titleResultGaussianLable = new JLabel("Resultado");
         container.add(titleResultGaussianLable,gbc);
@@ -96,19 +120,16 @@ public class KeyGeneratorWindow {
         gbc.gridwidth = 1;
 
         resultGaussianJText = new JTextField();
-        resultGaussianJText.setText("000000");
+        resultGaussianJText.setText("xxxxxxxxxxxxxxxxxxxxxx");
         container.add(resultGaussianJText,gbc);
 
 
-        gbc.gridx = 1;
-        JLabel multiplyGaussianLable = new JLabel("x10^"+multiplyFactor);
-        container.add(multiplyGaussianLable,gbc);
-
+//        gbc.gridx = 1;
+//        JLabel multiplyGaussianLable = new JLabel("x10^"+multiplyFactor);
+//        container.add(multiplyGaussianLable,gbc);
 
         gbc.gridx = 2;
         gbc.gridy = 0;
-
-
 
         JLabel titlePublicKeyLable = new JLabel("Chave Pública");
         container.add(titlePublicKeyLable,gbc);
@@ -121,12 +142,12 @@ public class KeyGeneratorWindow {
         gbc.gridx = 2;
         gbc.gridy = 1;
         publicKeyJText = new JTextField();
-        publicKeyJText.setText("000000");
+        publicKeyJText.setText("xxxxxxxxxxxxxxxxxxxxxx");
         container.add(publicKeyJText,gbc);
 
         gbc.gridx = 3;
         privateKeyJText = new JTextField();
-        privateKeyJText.setText("000000");
+        privateKeyJText.setText("xxxxxxxxxxxxxxxxxxxxxx");
         container.add(privateKeyJText,gbc);
 
 
@@ -139,16 +160,16 @@ public class KeyGeneratorWindow {
 
 
         gbc.gridy = 1;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
 
         resultTriangularJText = new JTextField();
-        resultTriangularJText.setText("000000");
+        resultTriangularJText.setText("xxxxxxxxxxxxxxxxxxxxxx");
         container.add(resultTriangularJText,gbc);
 
 
-        gbc.gridx = 6;
-        JLabel multiplyTriangularLable = new JLabel("x10^"+multiplyFactor);
-        container.add(multiplyTriangularLable,gbc);
+//        gbc.gridx = 6;
+//        JLabel multiplyTriangularLable = new JLabel("x10^"+multiplyFactor);
+//        container.add(multiplyTriangularLable,gbc);
 
         return  container;
     }
@@ -204,12 +225,56 @@ public class KeyGeneratorWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 BufferedImage histogramImg = Histogram.createHistogram(
-                        "Histograma Gaussiano", gaussianDistribution.createHistogramData(), 900, 400, 20);
+                        "Histograma Gaussiano", gaussianDistribution.createHistogramData(), 900, 400, 81);
 
                 HistogramWindow.createHistogramJFrame("Histograma Gaussiano", histogramImg).setVisible(true);
             }
         });
         return  gaussianHistogramButton;
+    }
+
+    private Container createUniformDistributionContainer() {
+
+        Container container = new Container();
+        container.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = insets;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        JLabel uniformDistributionTitleLable = new JLabel("Distribuição Uniforme Contínua");
+        container.add(uniformDistributionTitleLable, gbc);
+
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+
+        JTextField uniformJText = new JTextField();
+        resultUniform = uniformDistribution.getUniform();
+        uniformJText.setText(String.format("%,.2f",resultUniform));
+        container.add(uniformJText, gbc);
+        medianGaussianJText.setText(String.format("%,.2f",resultUniform));
+
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        uniformHistogramButton = createUniformHistogramButton();
+        container.add(uniformHistogramButton,gbc);
+
+        return container;
+    }
+
+
+    private Button createUniformHistogramButton() {
+        Button uniformHistogramButton = new Button("Histograma Uniforme");
+        uniformHistogramButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                BufferedImage histogramImg = Histogram.createHistogram(
+                        "Histograma Uniforme", uniformDistribution.createHistogramData(), 900, 400, 81);
+
+                HistogramWindow.createHistogramJFrame("Histograma Uniforme", histogramImg).setVisible(true);
+            }
+        });
+        return  uniformHistogramButton;
     }
 
     private Container createTriangleDistributionContainer() {
@@ -337,24 +402,50 @@ public class KeyGeneratorWindow {
         calculateKeysButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sliderValue = slider.getSliderValue();
+                int sliderEncryptValue = slider.getEncryptionValue();
                 getContinuousDistributionValues();
-                medianGaussianJText.setText(Integer.toString(sliderValue));
-                resultGaussianJText.setText(Integer.toString(resultGaussian));
-                resultTriangularJText.setText(Integer.toString(resultTriangular));
+                //medianGaussianJText.setText(Integer.toString(sliderValue));
+                resultGaussianJText.setText(resultGaussian.toString());
+                resultTriangularJText.setText(resultTriangular.toString());
+                RSA.setRSAKeys(resultGaussian, resultTriangular, node, sliderEncryptValue);
+                privateKeyJText.setText(node.getP().toString());
+                publicKeyJText.setText(node.getQ().toString());
                 gaussianHistogramButton.setEnabled(true);
                 triangularHistogramButton.setEnabled(true);
+                okButton.setEnabled(true);
             }
         });
+    }
+
+    private Button createOKButton() {
+        okButton = new Button("Chat");
+        okButton.setEnabled(false);
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (node instanceof ServerNode) {
+                    Thread thread = new Thread((ServerNode) node);
+                    thread.start();
+                }
+                if (node instanceof ClientNode) {
+                    Thread thread = new Thread((ClientNode) node);
+                    thread.start();
+                }
+
+                frame.setVisible(false);
+
+            }
+        });
+        return  okButton;
     }
 
     private void getContinuousDistributionValues(){
 
         // GAUSSIAN VALUE
-        gaussianDistribution = new GaussianDistribution(sliderValue,uniformDiscrete);
-        resultGaussian = (int) (gaussianDistribution.getGaussian() * Math.pow(10,uniformDiscrete));
+        gaussianDistribution = new GaussianDistribution(resultUniform,uniformDiscrete);
+        resultGaussian = BigDecimal.valueOf(gaussianDistribution.getGaussian() * Math.pow(2,slider.getEncryptionValue())).toBigInteger();
         triangleDistribution = new TriangleDistribution(triangleDiscrete);
-        resultTriangular = (int) (triangleDistribution.getTriangular() * Math.pow(10,uniformDiscrete));
+        resultTriangular =  BigDecimal.valueOf(triangleDistribution.getTriangular() * Math.pow(2,slider.getEncryptionValue())).toBigInteger();
     }
 
     public void setCalculateKeysButtonEnable(){ calculateKeysButton.setEnabled(true);}
@@ -362,9 +453,9 @@ public class KeyGeneratorWindow {
 
 
     public static void main(String[] args) {
-        KeyGeneratorWindow kgw = new KeyGeneratorWindow();
-        Frame frame = kgw.createWindow();
-        frame.setVisible(true);
+//        KeyGeneratorWindow kgw = new KeyGeneratorWindow();
+//        Frame frame = kgw.createWindow();
+//        frame.setVisible(true);
     }
 
 

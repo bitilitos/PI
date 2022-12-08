@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 public class TriangleDistribution {
     int rangeStart = 0;
 
+
     public TriangleDistribution(int rangeStart) {
 
         this.rangeStart= rangeStart;
@@ -14,11 +15,10 @@ public class TriangleDistribution {
 
 
     public double getTriangular(){
-        return Math.sqrt(Math.random())+rangeStart;
+        return Math.sqrt(4*Math.random())+rangeStart;
     }
 
-    public double FDP(double x) {
-        return Math.pow(x,2);
+    public double FDP(double x) {return 0.5*x;
     }
 
     //cria um array de double com distribuição triangular
@@ -33,7 +33,7 @@ public class TriangleDistribution {
 
     public static void main(String[] args) {
         TriangleDistribution td = new TriangleDistribution(5);
-        BufferedImage histogramImg = Histogram.createHistogram("Histograma Triangular", td.createHistogramData(), 900, 400, 100        );
+        BufferedImage histogramImg = Histogram.createHistogram("Histograma Triangular", td.createHistogramData(), 900, 400, 100      );
         HistogramWindow.createHistogramJFrame("Histograma Triangular", histogramImg).setVisible(true);
     }
 }

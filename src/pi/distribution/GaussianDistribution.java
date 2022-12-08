@@ -1,21 +1,9 @@
 package pi.distribution;
 
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
-import pi.gui.HistogramWindow;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import pi.gui.HistogramWindow;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Random;
 
 public final class GaussianDistribution {
 
@@ -173,8 +161,8 @@ public final class GaussianDistribution {
 
 
     public static void main(String[] args) {
-        GaussianDistribution gd = new GaussianDistribution(50, 20);
-        BufferedImage histogramImg = Histogram.createHistogram("Histograma Gaussiano", gd.createHistogramData(), 900, 400, 20
+        GaussianDistribution gd = new GaussianDistribution(50, 100);
+        BufferedImage histogramImg = Histogram.createHistogram("Histograma Gaussiano", gd.createHistogramData(), 900, 400, 1001
         );
         HistogramWindow.createHistogramJFrame("Histograma Gaussiano", histogramImg).setVisible(true);
     }
