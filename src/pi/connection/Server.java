@@ -57,16 +57,16 @@ public class Server {
 
         try {
             ois = new ObjectInputStream(clientSocket.getInputStream());
-            String message = (String) ois.readObject();
+            Message message = (Message) ois.readObject();
 
             System.out.println("Server received Message: " + message);
-            if (message.charAt(0) == '|')
-                getClientKey(message);
+            if (message.getType() == 0)
+                getClientKey(message.getDecimal());
             else {
                 BigInteger d = new BigInteger(window.getD());
                 BigInteger N = new BigInteger(window.getN());
                 System.out.println("D: " + d +"\n" + "N: "+ N +"\nMessage: " + message);
-                byte[] decryptedMessage = RSA.decryptMessage(message.getBytes(StandardCharsets.UTF_8), d, N);
+                byte[] decryptedMessage = RSA.decryptMessage(message.getMessage(), d, N);
                 System.out.println(decryptedMessage);
                 System.out.println(new String(decryptedMessage));
                 window.updateMessageReceivedJTextField(new String(decryptedMessage));
@@ -81,21 +81,24 @@ public class Server {
 
     }
 
-    private void getClientKey(String message) {
-
-        String keysString[] = message.substring(1).split(":");
-        clientEKey = new BigInteger(keysString[0]);
-        clientNKey = new BigInteger(keysString[1]);
+    private void getClientKey(String[] message) {
+        clientEKey = new BigInteger(message[0]);
+        clientNKey = new BigInteger(message[1]);
         window.setPublicClient_E_KeyJTextField(clientEKey.toString());
         window.setPublicClient_N_KeyJTextField(clientNKey.toString());
         sendPublicKeys();
     }
 
     private void sendPublicKeys() {
-        sendMessage("|" + window.getE() + ":" + window.getN(), "Server");
+        //sendMessage("|" + window.getE() + ":" + window.getN(), "Server");
+        String[]decimals = new String[2];
+        decimals[0] = window.getE();
+        decimals[1] = window.getN();
+        new Message(0,decimals);
+        sendMessage(new Message(0,decimals), "client");
     }
 
-    public void sendMessage(String msg, String name) {
+    public void sendMessage(Message msg, String name) {
         try{
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
             System.out.println(name +" is sending a message...");

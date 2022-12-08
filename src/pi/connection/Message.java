@@ -1,6 +1,11 @@
 package pi.connection;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
+
+
+
 
     private byte[] message;
     private String[] decimal ;
@@ -15,5 +20,33 @@ public class Message {
         this.type = type;
         this.message = message;
     }
+
+    public void setMessage(byte[] message) {
+        this.message = message;
+    }
+
+    public void setDecimal(String[] decimal) {
+        this.decimal = decimal;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public byte[] getMessage() {
+        return message;
+    }
+
+    public String[] getDecimal() {
+        return decimal;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+
+
+
 
 }
